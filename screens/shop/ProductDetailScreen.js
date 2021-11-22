@@ -1,5 +1,7 @@
 import React from 'react';
 import { ScrollView, Image, Button, StyleSheet, Text, View } from 'react-native';
+import * as Font from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 import { useSelector } from 'react-redux';
 
@@ -42,12 +44,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     price: {
+        fontFamily: 'open-sans-bold',
         fontSize: 20,
         color: '#888',
         textAlign: 'center',
         marginVertical: 20,
     },
     description: {
+        fontFamily: 'open-sans',
         fontSize: 14,
         textAlign: 'center',
         marginHorizontal: 20,
