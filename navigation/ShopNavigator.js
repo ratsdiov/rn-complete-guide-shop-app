@@ -5,12 +5,14 @@ import { Platform } from 'react-native';
 
 import ProductsOverviewScreen from '../screens/shop/ProductsOverviewScreen';
 import ProductDetailScreen from '../screens/shop/ProductDetailScreen';
+import CartScreen from '../screens/shop/CartScreen';
 
 import Colors from '../constants/Colors';
 
 const ProductsNavigator = createStackNavigator({
     ProductsOverview: ProductsOverviewScreen,
     ProductDetail: ProductDetailScreen,
+    Cart: CartScreen,
 }, {
     defaultNavigationOptions: {
         headerStyle: {
@@ -25,9 +27,5 @@ const ProductsNavigator = createStackNavigator({
         headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
     }
 });
-
-ProductsOverviewScreen.navigationOptions = {
-    headerTitle: 'All Products'
-};
 
 export default createAppContainer(ProductsNavigator);
