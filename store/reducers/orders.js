@@ -7,7 +7,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case ADD_ORDER:
+        case ADD_ORDER:  // Note handled here and also in the cart reducer (to clear the cart)
             const newOrder = new Order(
                 new Date().toString(),
                 action.orderData.items,

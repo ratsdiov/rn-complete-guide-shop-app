@@ -1,4 +1,5 @@
-import { ADD_TO_CART, REMOVE_FROM_CART } from "../actions/cart";
+import { ADD_TO_CART, REMOVE_FROM_CART } from '../actions/cart';
+import { ADD_ORDER } from '../actions/orders';
 import CartItem from '../../models/cart-item';
 import { ActivityIndicatorComponent } from "react-native";
 
@@ -53,7 +54,9 @@ export default (state = initialState, action) => {
                 ...state,
                 items: updatedCartItems,
                 totalAmount: state.totalAmount - selectedCartItem.productPrice
-            }
+            };
+        case ADD_ORDER:  // Note handled here and also in the orders reducer
+            return initialState;
 
     }
     return state;
