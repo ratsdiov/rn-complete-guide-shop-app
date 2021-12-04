@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
@@ -10,6 +10,14 @@ const EditProductScreen = (props) => {
     const editedProduct = useSelector(
         state => state.products.userProducts.find(prod => prod.id === prodId)
     );
+
+    const submitHandler = useCallback(() => {
+        console.log('Submitting');
+    }, []);
+
+    useEffect(() => {
+        props.navigation.setParams({ 'submit': submitHandler });
+    }, [submitHandler]);
 
     const [title, setTitle] = useState(editedProduct ? editedProduct.title : '');
     const [imageUrl, setImageUrl] = useState(editedProduct ? editedProduct.imageUrl : '');
@@ -62,6 +70,7 @@ const EditProductScreen = (props) => {
 export default EditProductScreen;
 
 EditProductScreen.navigationOptions = navData => {
+    const submitFn = navData.navigation.getParam('submit');
     return {
         headerTitle: navData.navigation.getParam('productId')
             ? 'Edit Product'
@@ -71,10 +80,7 @@ EditProductScreen.navigationOptions = navData => {
                 <Item
                     title='Save'
                     iconName={Platform.OS === 'android' ? 'md-checkmark' : 'ios-checkmark'}
-                    onPress={() => {
-                        // Note no ID is passed to indicate this is add vs edit
-                        navData.navigation.navigate('EditProduct');
-                    }}
+                    onPress={submitFn}
                 />
             </HeaderButtons>,
 
