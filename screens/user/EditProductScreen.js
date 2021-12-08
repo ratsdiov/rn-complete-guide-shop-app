@@ -12,20 +12,21 @@ const EditProductScreen = (props) => {
         state => state.products.userProducts.find(prod => prod.id === prodId)
     );
     const dispatch = useDispatch();
-    
+
     const [title, setTitle] = useState(editedProduct ? editedProduct.title : '');
     const [imageUrl, setImageUrl] = useState(editedProduct ? editedProduct.imageUrl : '');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState(editedProduct ? editedProduct.description : '');
 
     const submitHandler = useCallback(() => {
-        console.log('Submitting', title);
+        // console.log('Submitting', title);
         if (editedProduct) {
             dispatch(productsActions.updateProduct(prodId, title, description, imageUrl));
         } else {
             // Note +price converts string to number
             dispatch(productsActions.createProduct(title, description, imageUrl, +price));
         }
+        props.navigation.goBack();
     }, [dispatch, prodId, title, description, imageUrl, price]);
 
     useEffect(() => {
