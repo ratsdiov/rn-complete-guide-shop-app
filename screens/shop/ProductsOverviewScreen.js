@@ -29,6 +29,19 @@ const ProductsOverviewScreen = (props) => {
     }, [dispatch, setIsLoading, setError]);
 
     useEffect(() => {
+        const willFocusSub = props.navigation.addListener(
+            'willFocus', 
+            loadProducts
+        );
+
+        return () => {
+            willFocusSub.remove()
+        };
+    }, [loadProducts]);
+
+    // This is called initially and after that the willFocusSub listener will be used
+    // see lesson 207, 4:30
+    useEffect(() => {
         loadProducts();
     }, [dispatch, loadProducts]);
 
