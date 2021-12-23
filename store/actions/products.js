@@ -1,7 +1,32 @@
+import Product from "../../models/product";
+
 export const DELETE_PRODUCT = 'DELETE_PRODUCT';
 export const CREATE_PRODUCT = 'CREATE_PRODUCT';
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
+export const SET_PRODUCTS = 'SET_PRODUCT';
 
+export const fetchProducts = () => {
+    return async dispatch => {
+        // Note method defaults to GET and header/body not needed so no second arg to fetch
+        const response = await fetch("https://rn-shop-app-a7346-default-rtdb.firebaseio.com/products.json");
+
+        const resData = await response.json();
+        const loadedProducts = [];
+
+        // console.log('resdata', resData);
+
+        for (const key in resData) {
+            loadedProducts.push(new Product(key,
+                'u1',
+                resData[key].title,
+                resData[key].imageUrl,
+                resData[key].description,
+                resData[key].price));
+        }
+
+        return dispatch({ type: SET_PRODUCTS, products: loadedProducts });
+    };
+};
 
 export const deleteProduct = productId => {
     return { type: DELETE_PRODUCT, pid: productId };
