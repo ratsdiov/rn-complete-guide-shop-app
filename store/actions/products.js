@@ -7,24 +7,30 @@ export const SET_PRODUCTS = 'SET_PRODUCT';
 
 export const fetchProducts = () => {
     return async dispatch => {
-        // Note method defaults to GET and header/body not needed so no second arg to fetch
-        const response = await fetch("https://rn-shop-app-a7346-default-rtdb.firebaseio.com/products.json");
 
-        const resData = await response.json();
-        const loadedProducts = [];
+        try {
+            // Note method defaults to GET and header/body not needed so no second arg to fetch
+            const response = await fetch("https://rn-shop-app-a7346-default-rtdb.firebaseio.com/products.json");
+            if (!response.ok) {
+                throw new Error('Bad response from fetchProducts fetch request');
+            }
 
-        // console.log('resdata', resData);
+            const resData = await response.json();
+            const loadedProducts = [];
 
-        for (const key in resData) {
-            loadedProducts.push(new Product(key,
-                'u1',
-                resData[key].title,
-                resData[key].imageUrl,
-                resData[key].description,
-                resData[key].price));
+            for (const key in resData) {
+                loadedProducts.push(new Product(key,
+                    'u1',
+                    resData[key].title,
+                    resData[key].imageUrl,
+                    resData[key].description,
+                    resData[key].price));
+            }
+
+            dispatch({ type: SET_PRODUCTS, products: loadedProducts });
+        } catch (err) {
+            throw (err);
         }
-
-        return dispatch({ type: SET_PRODUCTS, products: loadedProducts });
     };
 };
 
