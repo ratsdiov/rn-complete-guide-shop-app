@@ -13,36 +13,40 @@ import Colors from '../../constants/Colors';
 
 const ProductsOverviewScreen = (props) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [error, setError] = useState();
     const products = useSelector(state => state.products.availableProducts);
     const dispatch = useDispatch();
 
     const loadProducts = useCallback(async () => {
         setError(null);
-        setIsLoading(true);
+        setIsRefreshing(true);
         try {
             await dispatch(productsActions.fetchProducts());
         } catch (err) {
             setError(err.message);
         }
-        setIsLoading(false);
+        setIsRefreshing(false);
     }, [dispatch, setIsLoading, setError]);
 
     useEffect(() => {
         const willFocusSub = props.navigation.addListener(
-            'willFocus', 
+            'willFocus',
             loadProducts
         );
 
         return () => {
-            willFocusSub.remove()
+            willFocusSub.remove();
         };
     }, [loadProducts]);
 
     // This is called initially and after that the willFocusSub listener will be used
     // see lesson 207, 4:30
     useEffect(() => {
-        loadProducts();
+        setIsLoading(true);  // Done here instead of loadProducts to support flatlist refresh
+        loadProducts().then(() => {      // See 213: 2:00
+            setIsLoading(false);
+        });
     }, [dispatch, loadProducts]);
 
     const selectItemHandler = (id, title) => {
@@ -79,6 +83,8 @@ const ProductsOverviewScreen = (props) => {
 
     return (
         <FlatList
+            onRefresh={loadProducts}
+            refreshing={isRefreshing}
             data={products}
             keyExtractor={item => item.id}
             renderItem={itemData => (
