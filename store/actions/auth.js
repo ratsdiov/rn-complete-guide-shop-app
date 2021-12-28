@@ -1,6 +1,8 @@
 export const SIGNUP = 'SIGNUP';
 export const LOGIN = 'LOGIN';
 
+// Todo - combine the highly duplicated logic between signup and
+
 export const signup = (email, password) => {
     return async dispatch => {
         const response = await fetch(
@@ -30,9 +32,9 @@ export const signup = (email, password) => {
         }
 
         const resData = await response.json();
-        console.log('signup', resData);
+        // console.log('signup', resData);
 
-        dispatch({ type: SIGNUP });
+        dispatch({ type: SIGNUP, token: resData.idToken, userId: resData.localId });
 
     };
 };
@@ -69,9 +71,9 @@ export const login = (email, password) => {
         }
 
         const resData = await response.json();
-        console.log('login', resData);
+        // console.log('login', resData);
 
-        dispatch({ type: LOGIN });
+        dispatch({ type: LOGIN, token: resData.idToken, userId: resData.localId });
 
     };
 };
