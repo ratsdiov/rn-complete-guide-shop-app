@@ -3,8 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const AUTHENTICATE = 'AUTHENTICATE';
 export const LOGOUT = 'LOGOUT';
 
-export const authenticate = (userId, token) => {
-    return { type: AUTHENTICATE, userId: userId, token: token };
+let timer;
+
+export const authenticate = (userId, token, expiryTime) => {
+    return dispatch => {
+        dispatch(setLogoutTimer(expiryTime));
+        dispatch({ type: AUTHENTICATE, userId: userId, token: token });
+    };
 };
 
 // Todo - combine the highly duplicated logic between signup and login
@@ -39,7 +44,13 @@ export const signup = (email, password) => {
         const resData = await response.json();
         // console.log('signup', resData);
 
-        dispatch({ type: SIGNUP, token: resData.idToken, userId: resData.localId });
+        dispatch(
+            authenticate(
+                resData.localId,
+                resData.idToken,
+                parseInt(resData.expiresIn) * 1000
+            )
+        );
 
         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
         saveDataToStorage(resData.idToken, resData.localId, expirationDate);
@@ -80,15 +91,36 @@ export const login = (email, password) => {
         const resData = await response.json();
         // console.log('login', resData);
 
-        dispatch(authenticate(resData.localId, resData.idToken));
+        dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000));
         const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000);
         saveDataToStorage(resData.idToken, resData.localId, expirationDate);
     };
 };
 
 export const logout = () => {
-    return { type: LOGOUT }
-}
+    console.log('logging out');
+    clearLogoutTimer();
+    // Note this returns a promise but we don't care when it actually completes
+    AsyncStorage.removeItem('userData');
+    return { type: LOGOUT };
+};
+
+const clearLogoutTimer = () => {
+    if (timer) {
+        clearTimeout(timer);
+    }
+};
+
+const setLogoutTimer = expirationTime => {
+    console.log('logout time', expirationTime, new Date().getTime());
+    return dispatch => {
+        timer = setTimeout(() => {
+            dispatch(logout());
+        }, expirationTime);
+        // }, expirationTime / 1000);  // For 3.6 second autologout testing
+
+    };
+};
 
 const saveDataToStorage = (token, userId, expirationDate) => {
     AsyncStorage.setItem(
